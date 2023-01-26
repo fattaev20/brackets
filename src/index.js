@@ -8,23 +8,32 @@ module.exports = function check(str, bracketsConfig) {
 
     objBrackets = Object.fromEntries(bracketsConfig)
 
-    for (key in objBrackets) {
-        if (objBrackets[key] == key) {
-            same.push(key)
+    for (let key of bracketsConfig) {
+        positive.push(key[0]);
+        negative.push(key[1]);
+        if (positive.includes(key[1]) && negative.includes(key[0])) {
+            positive.pop(key[0]);
+            negative.pop(key[1]);
+            same.push(key[0]);
         }
     }
 
 
-    for (let key of bracketsConfig) {
-        positive.push(key[0]);
-        negative.push(key[1]);
-    }
     for (let i = 0; i < expLen; i++) {
         let x = str[i]
 
         if (positive.includes(x)) {
             stack.push(x);
             continue;
+        }
+
+        if (same.includes(x)) {
+            if (stack[stack.length - 1] != x || stack.length == 0) {
+                stack.push(x);
+                continue;
+            } else if (stack[stack.length - 1] == x) {
+                negative.push(x);
+            }
         }
 
 
@@ -37,18 +46,17 @@ module.exports = function check(str, bracketsConfig) {
             stack.splice(stack.length - 1, 1);
         }
 
-        let check = stack.pop();
-        if (objBrackets[check] != x) {
-            return false;
+        let check;
+        if (negative.includes(x)) {
+            check = stack.pop();
+            if (objBrackets[check] != x) {
+                return false;
+            }
         }
 
-    }
-    stack.sort();
-    for (let i = 0; i < stack.length; i++) {
-        if (stack[stack.length - 1] == stack[stack.length - 2]) {
-            stack.splice(stack.length - 1, 1);
-            stack.splice(stack.length - 1, 1);
-        }
+
+
+
     }
     return stack.length === 0;
 }
