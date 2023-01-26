@@ -53,10 +53,6 @@ module.exports = function check(str, bracketsConfig) {
                 return false;
             }
         }
-
-
-
-
     }
     return stack.length === 0;
 }
